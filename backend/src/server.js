@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import { connectDB } from './config/db.js';
 import userRoutes from './routes/user.routes.js';
 
@@ -15,6 +16,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 connectDB();
+
+// Configura CORS antes de cualquier ruta
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
+
+// Lectura del JSON
+app.use(express.json());
 
 // Middlewares y rutas
 app.use('/api/v1/user', userRoutes);

@@ -93,3 +93,29 @@ export const loginUser = async (req, res) => {
     });
   }
 };
+
+// ✅ Verificación de token para mostrar perfil protegido
+export const verifyToken = async (req, res) => {
+  try {
+    const { id } = req.user; // `req.user` viene del middleware de autenticación
+    const userFound = await User.findById(id);
+
+    if (!userFound) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    res.status(200).json({
+      user: {
+        id: userFound._id,
+        nombre: userFound.nombre,
+        correo: userFound.correo,
+        imagen: userFound.imagen
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Error en el servidor',
+      detail: error.message
+    });
+  }
+};

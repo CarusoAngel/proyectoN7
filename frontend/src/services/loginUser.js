@@ -16,6 +16,12 @@ export const loginUser = async ({ correo, password }) => {
       throw new Error(data.error || 'Error desconocido');
     }
 
+    // Guardar token y nombre en localStorage
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('nombre', data.user.nombre);
+    
+    window.dispatchEvent(new Event("storage"));
+
     return data;
   } catch (error) {
     throw new Error(error.message);

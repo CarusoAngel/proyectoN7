@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiShoppingCart } from "react-icons/fi";
 import CarritoDropdown from "./CarritoDropdown";
 
 export default function Navbar({ cantidadEnCarrito, carrito, eliminarDelCarrito, vaciarCarrito }) {
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
+  const [nombreUsuario, setNombreUsuario] = useState(null);
   const carritoRef = useRef(null);
+  const navigate = useNavigate();
 
-  // Cerrar al hacer clic fuera del dropdown
+  // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
     const handleClickFuera = (event) => {
       if (carritoRef.current && !carritoRef.current.contains(event.target)) {
@@ -18,14 +20,51 @@ export default function Navbar({ cantidadEnCarrito, carrito, eliminarDelCarrito,
     return () => document.removeEventListener("mousedown", handleClickFuera);
   }, []);
 
+  // Escuchar cambios en localStorage (incluido cambio manual con dispatchEvent)
+  useEffect(() => {
+    const actualizarNombre = () => {
+      const nombre = localStorage.getItem("nombre");
+      setNombreUsuario(nombre);
+    };
+
+    actualizarNombre(); // en primera carga
+    window.addEventListener("storage", actualizarNombre); // por si cambia desde otra pestaña
+
+    return () => window.removeEventListener("storage", actualizarNombre);
+  }, []);
+
+  // Función para cerrar sesión
+  const cerrarSesion = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("nombre");
+    setNombreUsuario(null); // asegurarse de limpiar estado
+    navigate("/login");
+  };
+
   return (
     <nav className="fixed w-full top-0 left-0 z-20 bg-transparent backdrop-blur-sm text-white py-4 px-8 flex justify-between items-center">
-      {/* Links */}
-      <div className="flex gap-10 font-semibold">
+      {/* Links de navegación */}
+      <div className="flex gap-10 font-semibold items-center">
         <Link to="/" className="hover:text-yellow-400 transition-colors">Home</Link>
         <Link to="/productos" className="hover:text-yellow-400 transition-colors">Productos</Link>
-        <Link to="/login" className="hover:text-yellow-400 transition-colors">Login</Link>
-        <Link to="/registro" className="hover:text-yellow-400 transition-colors">Registro</Link>
+        {!nombreUsuario ? (
+          <>
+            <Link to="/login" className="hover:text-yellow-400 transition-colors">Login</Link>
+            <Link to="/registro" className="hover:text-yellow-400 transition-colors">Registro</Link>
+          </>
+        ) : (
+          <>
+            <Link to="/perfil" className="hover:text-yellow-400 transition-colors">
+              Perfil de {nombreUsuario}
+            </Link>
+            <button
+              onClick={cerrarSesion}
+              className="ml-2 hover:text-red-400 transition-colors"
+            >
+              Cerrar sesión
+            </button>
+          </>
+        )}
       </div>
 
       {/* Ícono de carrito */}

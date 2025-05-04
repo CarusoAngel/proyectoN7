@@ -6,6 +6,7 @@ import Home from "../pages/Home";
 import Productos from "../pages/Productos";
 import Login from "../pages/Login";
 import Registro from "../pages/Registro";
+import Perfil from "../pages/Perfil"; // 🆕 Importación de Perfil
 
 export default function Router() {
   const [carrito, setCarrito] = useState([]);
@@ -53,6 +54,7 @@ export default function Router() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
+        <Route path="/perfil" element={<Perfil />} /> {/* 🆕 Ruta de perfil */}
       </Routes>
     </BrowserRouter>
   );

@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
+import { uploadPhoto } from '../config/multer.config.js';
 
 // Registro de usuario con imagen y contraseña encriptada
 export const registerUser = async (req, res) => {

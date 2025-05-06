@@ -54,10 +54,10 @@ const RegisterForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 text-sm"
+      className="space-y-4 text-sm text-white"
       encType="multipart/form-data"
     >
-      <h3 className="text-xl font-semibold mb-2 text-center">Formulario de Registro</h3>
+      <h3 className="text-xl font-semibold mb-4 text-center">Formulario de Registro</h3>
 
       <div className="flex flex-col">
         <label className="font-medium">Nombre</label>
@@ -66,7 +66,7 @@ const RegisterForm = () => {
           name="nombre"
           value={form.nombre}
           onChange={handleChange}
-          className="border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring focus:border-blue-300"
+          className="bg-black/20 border border-white/20 text-white rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           required
         />
       </div>
@@ -78,7 +78,7 @@ const RegisterForm = () => {
           name="apellido"
           value={form.apellido}
           onChange={handleChange}
-          className="border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring focus:border-blue-300"
+          className="bg-black/20 border border-white/20 text-white rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           required
         />
       </div>
@@ -90,7 +90,7 @@ const RegisterForm = () => {
           name="correo"
           value={form.correo}
           onChange={handleChange}
-          className="border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring focus:border-blue-300"
+          className="bg-black/20 border border-white/20 text-white rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           required
         />
       </div>
@@ -102,7 +102,7 @@ const RegisterForm = () => {
           name="telefono"
           value={form.telefono}
           onChange={handleChange}
-          className="border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring focus:border-blue-300"
+          className="bg-black/20 border border-white/20 text-white rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           required
         />
       </div>
@@ -114,7 +114,7 @@ const RegisterForm = () => {
           name="fechaNacimiento"
           value={form.fechaNacimiento}
           onChange={handleChange}
-          className="border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring focus:border-blue-300"
+          className="bg-black/20 border border-white/20 text-white rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           required
         />
       </div>
@@ -126,7 +126,7 @@ const RegisterForm = () => {
           name="password"
           value={form.password}
           onChange={handleChange}
-          className="border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring focus:border-blue-300"
+          className="bg-black/20 border border-white/20 text-white rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           required
         />
       </div>
@@ -138,7 +138,7 @@ const RegisterForm = () => {
           name="file"
           accept="image/*"
           onChange={handleChange}
-          className="mt-1"
+          className="mt-1 text-white"
           required
         />
       </div>
@@ -153,7 +153,7 @@ const RegisterForm = () => {
 
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition duration-200"
+        className="w-full bg-yellow-400 text-black font-bold py-2 rounded-xl hover:bg-yellow-300 transition"
       >
         Registrarse
       </button>

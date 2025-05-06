@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 
@@ -6,12 +6,11 @@ import Home from "../pages/Home";
 import Productos from "../pages/Productos";
 import Login from "../pages/Login";
 import Registro from "../pages/Registro";
-import Perfil from "../pages/Perfil"; // 🆕 Importación de Perfil
+import Perfil from "../pages/Perfil";
 
 export default function Router() {
   const [carrito, setCarrito] = useState([]);
 
-  // Agregar productos al carrito (acumulando cantidad)
   const agregarAlCarrito = (producto) => {
     setCarrito((prevCarrito) => {
       const existente = prevCarrito.find((item) => item.id === producto.id);
@@ -26,20 +25,18 @@ export default function Router() {
     });
   };
 
-  // Eliminar producto individual
   const eliminarDelCarrito = (indexAEliminar) => {
     setCarrito((prevCarrito) =>
       prevCarrito.filter((_, index) => index !== indexAEliminar)
     );
   };
 
-  // Vaciar todo el carrito
   const vaciarCarrito = () => {
     setCarrito([]);
   };
 
   return (
-    <BrowserRouter>
+    <>
       <Navbar
         carrito={carrito}
         cantidadEnCarrito={carrito.reduce((acc, item) => acc + item.cantidad, 0)}
@@ -54,8 +51,8 @@ export default function Router() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
-        <Route path="/perfil" element={<Perfil />} /> {/* 🆕 Ruta de perfil */}
+        <Route path="/perfil" element={<Perfil />} />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }

@@ -1,61 +1,66 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 export default function Perfil() {
-  const [user, setUser] = useState(null);
-  const [mensaje, setMensaje] = useState("Verificando sesión...");
+  const { user, token, dispatch } = useUser();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setMensaje("No estás autenticado.");
-      return;
+    if (!token || !user) {
+      navigate("/login");
     }
+  }, [token, user, navigate]);
 
-    fetch("http://localhost:3000/api/v1/user/verifytoken", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.user) {
-          setUser(data.user);
-          setMensaje("");
-        } else {
-          setMensaje("Token inválido o expirado.");
-        }
-      })
-      .catch(() => {
-        setMensaje("Error al verificar token.");
-      });
-  }, []);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    dispatch({ type: "LOGOUT" });
+    navigate("/login");
+  };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 px-4">
-      <h2 className="text-3xl font-bold mb-6">
-        {user?.nombre ? `Perfil de, ${user.nombre}` : "Perfil de Usuario"}
-      </h2>
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-gray-800 px-4">
+      <div className="absolute inset-0 bg-[url('/src/assets/background-stellare.webp')] bg-cover bg-center opacity-30 z-0"></div>
 
-      {mensaje && <p className="text-red-600 font-medium">{mensaje}</p>}
+      <div className="relative z-10 w-full max-w-md bg-black/60 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/10 text-white text-center">
+        <h2 className="text-3xl font-extrabold mb-6">Mi Perfil</h2>
 
-      {user && (
-        <div className="bg-white p-6 rounded shadow-md text-center max-w-sm w-full">
-          {user.imagen ? (
-            <img
-              src={user.imagen}
-              alt={`Foto de perfil de ${user.nombre}`}
-              className="w-32 h-32 object-cover rounded-full mx-auto mb-4 border-4 border-yellow-400"
-            />
-          ) : (
-            <div className="w-32 h-32 flex items-center justify-center bg-gray-200 rounded-full mx-auto mb-4 border-4 border-yellow-400 text-gray-500 text-sm">
-              Sin imagen
+        {user ? (
+          <>
+            {user.imagen ? (
+              <img
+                src={user.imagen}
+                alt="Foto de perfil"
+                className="w-24 h-24 mx-auto rounded-full mb-4 border-4 border-yellow-400 object-cover"
+              />
+            ) : (
+              <div className="w-24 h-24 mx-auto rounded-full mb-4 bg-gray-700 border-4 border-yellow-400 flex items-center justify-center text-2xl font-bold">
+                {user.nombre?.charAt(0)}
+              </div>
+            )}
+
+            <div className="mb-2">
+              <p className="text-sm text-gray-400">Nombre:</p>
+              <p className="text-lg font-semibold">{user.nombre}</p>
             </div>
-          )}
-          <p className="text-xl font-semibold mb-2">ID: {user.id}</p>
-          <p className="text-lg mb-2">Correo: {user.correo}</p>
-          <p className="text-lg text-green-700">Token válido ✅</p>
-        </div>
-      )}
-    </div>
+
+            <div className="mb-6">
+              <p className="text-sm text-gray-400">Correo electrónico:</p>
+              <p className="text-lg font-semibold">{user.correo}</p>
+            </div>
+
+            <button
+              onClick={handleLogout}
+              className="bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-2 px-6 rounded-xl transition-all duration-200"
+            >
+              Cerrar sesión
+            </button>
+          </>
+        ) : (
+          <p className="text-white">Cargando datos del usuario...</p>
+        )}
+      </div>
+    </section>
   );
 }

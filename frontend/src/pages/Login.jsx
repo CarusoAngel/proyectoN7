@@ -1,71 +1,75 @@
 import { useState } from "react";
-import { loginUser } from "../services/loginUser";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 export default function Login() {
-  const [form, setForm] = useState({ correo: "", password: "" });
-  const [error, setError] = useState("");
-  const [mensaje, setMensaje] = useState("");
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { dispatch } = useUser();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setMensaje("");
+    setLoading(true);
 
     try {
-      const data = await loginUser(form);
-      localStorage.setItem("token", data.token);
-      setMensaje("Inicio de sesión exitoso");
-    } catch (err) {
-      setError(err.message);
+      const response = await fetch("http://localhost:3000/api/v1/user/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ correo: email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("usuario", JSON.stringify(data.user));
+        dispatch({ type: "LOGIN", payload: { user: data.user, token: data.token } });
+        navigate("/perfil");
+      } else {
+        alert(data.message || "Credenciales incorrectas");
+      }
+    } catch (error) {
+      console.error("Error en login:", error);
+      alert("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md"
-      >
-        <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-gray-800 px-4">
+      <div className="absolute inset-0 bg-[url('/src/assets/background-stellare.webp')] bg-cover bg-center opacity-30 z-0"></div>
 
-        <label className="block mb-2 text-sm font-bold text-gray-700">
-          Correo electrónico
-        </label>
-        <input
-          type="email"
-          name="correo"
-          value={form.correo}
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded mb-4"
-        />
-
-        <label className="block mb-2 text-sm font-bold text-gray-700">
-          Contraseña
-        </label>
-        <input
-          type="password"
-          name="password"
-          value={form.password}
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded mb-4"
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Iniciar sesión
-        </button>
-
-        {error && <p className="mt-4 text-red-500 text-center">{error}</p>}
-        {mensaje && <p className="mt-4 text-green-500 text-center">{mensaje}</p>}
-      </form>
-    </div>
+      <div className="relative z-10 w-full max-w-md bg-black/60 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/10">
+        <h2 className="text-3xl font-extrabold text-white text-center mb-6">Iniciar Sesión</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Correo electrónico"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 rounded-xl bg-white/90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 rounded-xl bg-white/90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            required
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold py-3 rounded-xl transition-all duration-200 disabled:opacity-50"
+          >
+            {loading ? "Ingresando..." : "Entrar"}
+          </button>
+        </form>
+      </div>
+    </section>
   );
 }

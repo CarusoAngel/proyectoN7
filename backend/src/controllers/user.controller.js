@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
-import { uploadPhoto } from '../config/multer.config.js';
 
 // Registro de usuario con imagen y contraseña encriptada
+
 export const registerUser = async (req, res) => {
   try {
     const {
@@ -15,14 +15,11 @@ export const registerUser = async (req, res) => {
       password
     } = req.body;
 
-    // Enlace a la imagen subida
     const imageUrl = `${req.protocol}://${req.get('host')}/uploads/usuarios/${req.file.filename}`;
 
-    // Encriptar contraseña
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Crear nuevo usuario
     const user = new User({
       nombre,
       apellido,
@@ -38,6 +35,7 @@ export const registerUser = async (req, res) => {
     res.status(201).json({
       message: 'Usuario registrado correctamente',
       user: {
+        id: user._id,
         nombre: user.nombre,
         correo: user.correo,
         imagen: user.imagen
@@ -52,7 +50,8 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// Login de usuario con validación y JWT
+// Login con JWT y respuesta estructurada
+
 export const loginUser = async (req, res) => {
   const { correo, password } = req.body;
 
@@ -61,7 +60,7 @@ export const loginUser = async (req, res) => {
   }
 
   try {
-    const userFound = await User.findOne({ correo });
+    const userFound = await User.findOne({ correo }).select("+password");
     if (!userFound) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
@@ -87,6 +86,7 @@ export const loginUser = async (req, res) => {
         imagen: userFound.imagen
       }
     });
+
   } catch (error) {
     res.status(500).json({
       error: 'Error en el servidor',
@@ -95,17 +95,20 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// ✅ Verificación de token para mostrar perfil protegido
+// Verificación de token y retorno completo del usuario
+
 export const verifyToken = async (req, res) => {
   try {
-    const { id } = req.user; // `req.user` viene del middleware de autenticación
-    const userFound = await User.findById(id);
+    const { id } = req.user;
+
+    const userFound = await User.findById(id).select('nombre correo imagen');
 
     if (!userFound) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
     res.status(200).json({
+      message: 'Token válido',
       user: {
         id: userFound._id,
         nombre: userFound.nombre,
@@ -113,9 +116,10 @@ export const verifyToken = async (req, res) => {
         imagen: userFound.imagen
       }
     });
+
   } catch (error) {
     res.status(500).json({
-      error: 'Error en el servidor',
+      error: 'Error al verificar token',
       detail: error.message
     });
   }

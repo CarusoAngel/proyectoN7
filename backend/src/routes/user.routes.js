@@ -5,7 +5,7 @@ import {
   verifyToken
 } from "../controllers/user.controller.js";
 import { uploadPhoto } from "../config/multer.config.js";
-import { authMiddleware } from "../middlewares/auth.middleware.js";
+import auth from "../middlewares/auth.middleware.js"; 
 
 const router = express.Router();
 
@@ -16,6 +16,6 @@ router.post("/register", uploadPhoto("usuarios", "imagen"), registerUser);
 router.post("/login", loginUser);
 
 // Verificación de token con middleware de autenticación
-router.get("/verifytoken", authMiddleware, verifyToken);
+router.get("/verifytoken", auth, verifyToken);
 
 export default router;

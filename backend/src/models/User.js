@@ -31,11 +31,16 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      select: false, 
+      select: false,
     },
     imagen: {
       type: String,
       required: true,
+    },
+    rol: {
+      type: String,
+      enum: ["cliente", "admin"],
+      default: "cliente",
     },
   },
   {

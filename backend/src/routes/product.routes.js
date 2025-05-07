@@ -8,23 +8,33 @@ import {
 } from '../controllers/product.controller.js';
 
 import { uploadPhoto } from '../config/multer.config.js';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import auth from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
 // Crear producto con imagen y autenticación
-router.post('/', authMiddleware, uploadPhoto('productos', 'imagen'), createProduct);
+router.post(
+  '/',
+  auth,
+  uploadPhoto('productos', 'imagen'),
+  createProduct
+);
 
-// Obtener todos los productos
+// Obtener todos los productos (público)
 router.get('/', getAllProducts);
 
-// Obtener un producto por ID
+// Obtener un producto por ID (público)
 router.get('/:id', getProductById);
 
-// Actualizar producto
-router.put('/:id', authMiddleware, updateProduct);
+// Actualizar producto (puede incluir nueva imagen)
+router.put(
+  '/:id',
+  auth,
+  uploadPhoto('productos', 'imagen'),
+  updateProduct
+);
 
-// Eliminar producto
-router.delete('/:id', authMiddleware, deleteProduct);
+// Eliminar producto (requiere autenticación)
+router.delete('/:id', auth, deleteProduct);
 
 export default router;

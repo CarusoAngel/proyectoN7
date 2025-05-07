@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
 
 // Registro de usuario con imagen y contraseña encriptada
-
 export const registerUser = async (req, res) => {
   try {
     const {
@@ -27,7 +26,8 @@ export const registerUser = async (req, res) => {
       telefono,
       fechaNacimiento,
       password: hashedPassword,
-      imagen: imageUrl
+      imagen: imageUrl,
+      rol: "cliente" // 👈 Setea "cliente" por defecto si no se indica otro
     });
 
     await user.save();
@@ -38,7 +38,8 @@ export const registerUser = async (req, res) => {
         id: user._id,
         nombre: user.nombre,
         correo: user.correo,
-        imagen: user.imagen
+        imagen: user.imagen,
+        rol: user.rol
       }
     });
 
@@ -51,7 +52,6 @@ export const registerUser = async (req, res) => {
 };
 
 // Login con JWT y respuesta estructurada
-
 export const loginUser = async (req, res) => {
   const { correo, password } = req.body;
 
@@ -60,7 +60,8 @@ export const loginUser = async (req, res) => {
   }
 
   try {
-    const userFound = await User.findOne({ correo }).select("+password");
+    const userFound = await User.findOne({ correo }).select("nombre correo imagen rol +password");
+
     if (!userFound) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
@@ -83,7 +84,8 @@ export const loginUser = async (req, res) => {
         id: userFound._id,
         nombre: userFound.nombre,
         correo: userFound.correo,
-        imagen: userFound.imagen
+        imagen: userFound.imagen,
+        rol: userFound.rol
       }
     });
 
@@ -96,12 +98,11 @@ export const loginUser = async (req, res) => {
 };
 
 // Verificación de token y retorno completo del usuario
-
 export const verifyToken = async (req, res) => {
   try {
     const { id } = req.user;
 
-    const userFound = await User.findById(id).select('nombre correo imagen');
+    const userFound = await User.findById(id).select('nombre correo imagen rol');
 
     if (!userFound) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -113,7 +114,8 @@ export const verifyToken = async (req, res) => {
         id: userFound._id,
         nombre: userFound.nombre,
         correo: userFound.correo,
-        imagen: userFound.imagen
+        imagen: userFound.imagen,
+        rol: userFound.rol
       }
     });
 

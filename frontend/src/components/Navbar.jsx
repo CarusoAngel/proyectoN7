@@ -35,6 +35,12 @@ export default function Navbar({ cantidadEnCarrito, carrito, eliminarDelCarrito,
           <Link to="/" className="hover:text-yellow-400 transition-colors">Home</Link>
           <Link to="/productos" className="hover:text-yellow-400 transition-colors">Productos</Link>
 
+          {user?.rol === "admin" && (
+            <Link to="/admin-ordenes" className="hover:text-yellow-400 transition-colors">
+              Admin Órdenes
+            </Link>
+          )}
+
           {user ? (
             <>
               <Link to="/perfil" className="hover:text-yellow-400 transition-colors">

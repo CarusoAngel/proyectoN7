@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/User.js';
+import User from '../models/User.js';
 
 // Registro de usuario con imagen y contraseña encriptada
 export const registerUser = async (req, res) => {
@@ -27,7 +27,7 @@ export const registerUser = async (req, res) => {
       fechaNacimiento,
       password: hashedPassword,
       imagen: imageUrl,
-      rol: "cliente" // 👈 Setea "cliente" por defecto si no se indica otro
+      rol: "cliente"
     });
 
     await user.save();
@@ -124,5 +124,40 @@ export const verifyToken = async (req, res) => {
       error: 'Error al verificar token',
       detail: error.message
     });
+  }
+};
+
+// Actualización de datos del usuario autenticado
+export const updateUser = async (req, res) => {
+  try {
+    const userId = req.user.id || req.user._id;
+    const datosActualizados = req.body;
+
+    // Seguridad: evita que el usuario se cambie el rol o el password directamente
+    delete datosActualizados.rol;
+    delete datosActualizados.password;
+
+    const usuarioActualizado = await User.findByIdAndUpdate(
+      userId,
+      datosActualizados,
+      { new: true }
+    );
+
+    if (!usuarioActualizado) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.json({
+      message: "Usuario actualizado correctamente",
+      user: {
+        id: usuarioActualizado._id,
+        nombre: usuarioActualizado.nombre,
+        correo: usuarioActualizado.correo,
+        imagen: usuarioActualizado.imagen,
+        rol: usuarioActualizado.rol
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error al actualizar usuario", detail: error.message });
   }
 };

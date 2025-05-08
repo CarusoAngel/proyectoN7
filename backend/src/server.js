@@ -10,6 +10,7 @@ import { connectDB } from './config/db.js';
 import userRoutes from './routes/user.routes.js';
 import productRoutes from './routes/product.routes.js';
 import orderRoutes from './routes/order.routes.js';
+import checkoutRoutes from './routes/checkout.routes.js'; // ✅ NUEVO
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,13 +38,14 @@ app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/product', productRoutes);
 app.use('/api/v1/order', orderRoutes);
+app.use('/api/checkout', checkoutRoutes); // ✅ REGISTRO DE RUTA DE MP
 
 // Ruta base
 app.get('/', (req, res) => {
-  res.send('🚀 API de Stellare Industries funcionando!');
+  res.send('API de Stellare Industries funcionando!');
 });
 
 // Levantar servidor
 app.listen(PORT, () => {
-  console.log(`✅ Servidor backend escuchando en http://localhost:${PORT}`);
+  console.log(`Servidor backend escuchando en http://localhost:${PORT}`);
 });

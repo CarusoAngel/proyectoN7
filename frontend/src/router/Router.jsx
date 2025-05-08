@@ -8,6 +8,7 @@ import Perfil from "../pages/Perfil";
 import Checkout from "../pages/Checkout";
 import OrdenExitosa from "../pages/OrdenExitosa";
 import AdminOrdenes from "../pages/AdminOrdenes";
+import ErrorPago from "../pages/ErrorPago";
 
 import { useCarrito } from "../context/CarritoContext";
 
@@ -49,7 +50,8 @@ export default function Router() {
         <Route path="/registro" element={<Registro />} />
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/orden-exitosa" element={<OrdenExitosa />} />
-        <Route path="/admin/ordenes" element={<AdminOrdenes />} />
+        <Route path="/admin-ordenes" element={<AdminOrdenes />} />
+        <Route path="/error" element={<ErrorPago />} />
         <Route
           path="/checkout"
           element={

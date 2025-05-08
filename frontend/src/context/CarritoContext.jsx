@@ -28,7 +28,10 @@ function carritoReducer(state, action) {
 
     case "ELIMINAR_PRODUCTO":
       return {
-        carrito: state.carrito.filter((_, index) => index !== action.payload)
+        carrito: state.carrito.filter((item) => {
+          const idProducto = item._id || item.productoId || item.id;
+          return idProducto !== action.payload;
+        })
       };
 
     case "VACIAR_CARRITO":

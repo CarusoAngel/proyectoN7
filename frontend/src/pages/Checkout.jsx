@@ -8,12 +8,14 @@ const Checkout = ({ carrito, eliminarDelCarrito, vaciarCarrito }) => {
 
   const [nombre, setNombre] = useState("");
   const [direccion, setDireccion] = useState("");
+  const [modoInvitado, setModoInvitado] = useState(false);
+  const [mostrarOpcionesInvitado, setMostrarOpcionesInvitado] = useState(false);
 
   useEffect(() => {
     if (!user) {
-      navigate("/login");
+      setMostrarOpcionesInvitado(true);
     }
-  }, [user, navigate]);
+  }, [user]);
 
   const calcularTotal = () => {
     return carrito.reduce((total, item) => total + item.precio * item.cantidad, 0);
@@ -25,47 +27,99 @@ const Checkout = ({ carrito, eliminarDelCarrito, vaciarCarrito }) => {
       return;
     }
 
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      alert("Debes iniciar sesión para confirmar la compra.");
+    if (!carrito || carrito.length === 0) {
+      alert("Tu carrito está vacío.");
       return;
     }
 
+    const payload = {
+      nombre,
+      direccion,
+      productos: carrito.map((item) => ({
+        productoId: item._id,
+        nombre: item.nombre,
+        cantidad: item.cantidad,
+        precio: item.precio,
+      })),
+      total: calcularTotal(),
+    };
+
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    const token = localStorage.getItem("token");
+    if (user && token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     try {
-      const response = await fetch("http://localhost:3000/api/v1/order", {
+      const ordenResponse = await fetch("http://localhost:3000/api/v1/order", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      });
+
+      const ordenData = await ordenResponse.json();
+
+      if (!ordenResponse.ok) {
+        throw new Error(ordenData.message || "Error al crear la orden");
+      }
+
+      const itemsMP = carrito.map((item) => ({
+        nombre: item.nombre,
+        cantidad: item.cantidad,
+        precio: item.precio,
+      }));
+
+      console.log("Enviando a MP:", itemsMP);
+
+      const mpResponse = await fetch("http://localhost:3000/api/checkout/create-preference", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          nombre,
-          direccion,
-          productos: carrito.map((item) => ({
-            productoId: item._id,
-            nombre: item.nombre,
-            cantidad: item.cantidad,
-            precio: item.precio,
-          })),
-          total: calcularTotal(),
-        }),
+        body: JSON.stringify({ items: itemsMP }),
       });
 
-      const data = await response.json();
+      const mpData = await mpResponse.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Error al crear la orden");
+      if (mpData.init_point) {
+        vaciarCarrito();
+        window.location.href = mpData.init_point;
+      } else {
+        throw new Error("No se pudo generar el link de pago");
       }
-
-      alert("Orden confirmada con éxito");
-      vaciarCarrito();
-      navigate("/orden-exitosa");
     } catch (error) {
-      console.error("Error al enviar orden:", error);
-      alert("No se pudo confirmar la orden. Intenta nuevamente.");
+      console.error("Error al procesar:", error);
+      alert("No se pudo completar la orden ni el pago. Intenta nuevamente.");
     }
   };
+
+  if (!user && mostrarOpcionesInvitado && !modoInvitado) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-black to-gray-900 text-white p-6">
+        <div className="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-xl text-center space-y-6 max-w-lg">
+          <h2 className="text-2xl font-bold">¿Cómo deseas continuar?</h2>
+          <p className="text-gray-300">Puedes iniciar sesión para guardar tu historial o continuar como invitado.</p>
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={() => navigate("/login")}
+              className="bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-2 rounded-xl"
+            >
+              Iniciar sesión
+            </button>
+            <button
+              onClick={() => setModoInvitado(true)}
+              className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 rounded-xl"
+            >
+              Continuar como invitado
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-6 flex flex-col items-center justify-start text-white bg-gradient-to-b from-black to-gray-900">
@@ -98,7 +152,6 @@ const Checkout = ({ carrito, eliminarDelCarrito, vaciarCarrito }) => {
             Total: ${calcularTotal().toLocaleString("es-CL")}
           </div>
 
-          {/* FORMULARIO DE ORDEN */}
           <div className="mt-8 bg-white/10 backdrop-blur-md p-6 rounded-xl space-y-4">
             <h2 className="text-xl font-semibold">Datos para la Orden</h2>
             <input

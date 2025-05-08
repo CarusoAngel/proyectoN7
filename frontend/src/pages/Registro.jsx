@@ -33,7 +33,7 @@ export default function Registro() {
       for (const key in form) {
         formData.append(key, form[key]);
       }
-      formData.append("file", imagen);
+      formData.append("imagen", imagen);
 
       const response = await fetch("http://localhost:3000/api/v1/user/register", {
         method: "POST",

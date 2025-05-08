@@ -21,27 +21,33 @@ export default function CarritoDropdown({ carrito, eliminarDelCarrito, vaciarCar
       ) : (
         <>
           <ul className="space-y-3 max-h-60 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-500">
-            {carrito.map((producto) => (
-              <li key={producto._id || producto.nombre} className="flex justify-between items-center text-sm">
-                <div className="w-2/3">
-                  <p className="font-medium truncate text-white">{producto.nombre}</p>
-                  <p className="text-xs text-gray-400">
-                    {producto.cantidad} x ${producto.precio.toLocaleString("es-CL")}
-                  </p>
-                </div>
-                <div className="text-right w-1/3">
-                  <p className="font-semibold text-yellow-400">
-                    ${(producto.precio * producto.cantidad).toLocaleString("es-CL")}
-                  </p>
-                  <button
-                    onClick={() => eliminarDelCarrito(producto._id)}
-                    className="text-xs text-red-400 hover:text-red-300 mt-1 transition-colors"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </li>
-            ))}
+            {carrito.map((producto) => {
+              console.log("Producto en carrito:", producto);
+
+              const idProducto = producto._id || producto.productoId || producto.id;
+
+              return (
+                <li key={idProducto || producto.nombre} className="flex justify-between items-center text-sm">
+                  <div className="w-2/3">
+                    <p className="font-medium truncate text-white">{producto.nombre}</p>
+                    <p className="text-xs text-gray-400">
+                      {producto.cantidad} x ${producto.precio.toLocaleString("es-CL")}
+                    </p>
+                  </div>
+                  <div className="text-right w-1/3">
+                    <p className="font-semibold text-yellow-400">
+                      ${(producto.precio * producto.cantidad).toLocaleString("es-CL")}
+                    </p>
+                    <button
+                      onClick={() => eliminarDelCarrito(idProducto)}
+                      className="text-xs text-red-400 hover:text-red-300 mt-1 transition-colors"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
 
           <div className="mt-4 border-t border-white/20 pt-3 text-right">

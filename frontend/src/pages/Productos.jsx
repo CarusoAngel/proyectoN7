@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 
 export default function Productos({ agregarAlCarrito }) {
   const [productos, setProductos] = useState([]);
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/product");
+        const response = await fetch(`${BASE_URL}/api/v1/product`);
         const data = await response.json();
         setProductos(data);
       } catch (error) {
@@ -15,7 +16,7 @@ export default function Productos({ agregarAlCarrito }) {
     };
 
     fetchProductos();
-  }, []);
+  }, [BASE_URL]);
 
   return (
     <section className="relative min-h-screen px-6 py-20 bg-gradient-to-br from-black via-gray-900 to-gray-800">

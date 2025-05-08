@@ -15,6 +15,7 @@ export default function Registro() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { dispatch } = useUser();
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,10 +23,6 @@ export default function Registro() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!imagen) {
-      alert("Debes subir una imagen");
-      return;
-    }
 
     setLoading(true);
     try {
@@ -33,9 +30,11 @@ export default function Registro() {
       for (const key in form) {
         formData.append(key, form[key]);
       }
-      formData.append("imagen", imagen);
+      if (imagen) {
+        formData.append("imagen", imagen);
+      }
 
-      const response = await fetch("http://localhost:3000/api/v1/user/register", {
+      const response = await fetch(`${BASE_URL}/api/v1/user/register`, {
         method: "POST",
         body: formData,
       });
@@ -77,8 +76,10 @@ export default function Registro() {
             className="w-full p-3 rounded-xl bg-white/90 text-gray-800" required />
           <input type="date" name="fechaNacimiento" value={form.fechaNacimiento} onChange={handleChange}
             className="w-full p-3 rounded-xl bg-white/90 text-gray-800" required />
+
+          <label className="block text-sm text-white font-medium">Imagen de perfil (opcional):</label>
           <input type="file" name="file" accept="image/*" onChange={(e) => setImagen(e.target.files[0])}
-            className="w-full p-3 rounded-xl bg-white/90 text-gray-800" required />
+            className="w-full p-3 rounded-xl bg-white/90 text-gray-800" />
 
           <button type="submit"
             disabled={loading}

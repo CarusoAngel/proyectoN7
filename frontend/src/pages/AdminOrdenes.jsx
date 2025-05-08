@@ -7,6 +7,7 @@ const AdminOrdenes = () => {
   const navigate = useNavigate();
   const [ordenes, setOrdenes] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     if (!user || user.rol !== "admin") {
@@ -16,7 +17,7 @@ const AdminOrdenes = () => {
 
     const fetchOrdenes = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/v1/order/todas", {
+        const res = await fetch(`${BASE_URL}/api/v1/order/todas`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -32,7 +33,7 @@ const AdminOrdenes = () => {
     };
 
     fetchOrdenes();
-  }, [user, token, navigate]);
+  }, [user, token, navigate, BASE_URL]);
 
   return (
     <section className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-gray-800 p-8">

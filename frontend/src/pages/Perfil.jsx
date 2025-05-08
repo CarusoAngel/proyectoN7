@@ -7,6 +7,7 @@ export default function Perfil() {
   const navigate = useNavigate();
   const [ordenes, setOrdenes] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     if (!token || !user) {
@@ -16,7 +17,7 @@ export default function Perfil() {
 
     const fetchOrdenes = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/v1/order/mis-ordenes", {
+        const res = await fetch(`${BASE_URL}/api/v1/order/mis-ordenes`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -32,7 +33,7 @@ export default function Perfil() {
     };
 
     fetchOrdenes();
-  }, [token, user, navigate]);
+  }, [token, user, navigate, BASE_URL]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");

@@ -5,6 +5,7 @@ import { useUser } from "../context/UserContext";
 const Checkout = ({ carrito, eliminarDelCarrito, vaciarCarrito }) => {
   const { user } = useUser();
   const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   const [nombre, setNombre] = useState("");
   const [direccion, setDireccion] = useState("");
@@ -54,7 +55,7 @@ const Checkout = ({ carrito, eliminarDelCarrito, vaciarCarrito }) => {
     }
 
     try {
-      const ordenResponse = await fetch("http://localhost:3000/api/v1/order", {
+      const ordenResponse = await fetch(`${BASE_URL}/api/v1/order`, {
         method: "POST",
         headers,
         body: JSON.stringify(payload),
@@ -72,9 +73,7 @@ const Checkout = ({ carrito, eliminarDelCarrito, vaciarCarrito }) => {
         precio: item.precio,
       }));
 
-      console.log("Enviando a MP:", itemsMP);
-
-      const mpResponse = await fetch("http://localhost:3000/api/checkout/create-preference", {
+      const mpResponse = await fetch(`${BASE_URL}/api/checkout/create-preference`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

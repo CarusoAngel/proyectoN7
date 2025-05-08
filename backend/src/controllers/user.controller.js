@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-// Registro de usuario con imagen y contraseña encriptada
+// Registro de usuario con imagen opcional y token
 export const registerUser = async (req, res) => {
   try {
     const {
@@ -14,11 +14,20 @@ export const registerUser = async (req, res) => {
       password
     } = req.body;
 
-    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/usuarios/${req.file.filename}`;
-
+    // Encriptar contraseña
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // URL de imagen solo si hay archivo
+    let imageUrl = "";
+    if (req.file) {
+      const host = process.env.NODE_ENV === 'production'
+        ? 'https://stellare-backend.onrender.com'
+        : `${req.protocol}://${req.get('host')}`;
+      imageUrl = `${host}/uploads/usuarios/${req.file.filename}`;
+    }
+
+    // Crear usuario
     const user = new User({
       nombre,
       apellido,
@@ -32,8 +41,16 @@ export const registerUser = async (req, res) => {
 
     await user.save();
 
+    // Crear token
+    const token = jwt.sign(
+      { id: user._id, correo: user.correo },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
     res.status(201).json({
       message: 'Usuario registrado correctamente',
+      token,
       user: {
         id: user._id,
         nombre: user.nombre,
@@ -133,7 +150,6 @@ export const updateUser = async (req, res) => {
     const userId = req.user.id || req.user._id;
     const datosActualizados = req.body;
 
-    // Seguridad: evita que el usuario se cambie el rol o el password directamente
     delete datosActualizados.rol;
     delete datosActualizados.password;
 

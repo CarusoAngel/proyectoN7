@@ -14,7 +14,7 @@ export const registerUser = async (req, res) => {
       password
     } = req.body;
 
-    let imageUrl = '';
+    let imageUrl = null;
     if (req.file) {
       imageUrl = `${req.protocol}://${req.get('host')}/uploads/usuarios/${req.file.filename}`;
     }
@@ -100,7 +100,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// Verificación de token y retorno completo del usuario
+// Verificación de token
 export const verifyToken = async (req, res) => {
   try {
     const { id } = req.user;
@@ -130,7 +130,7 @@ export const verifyToken = async (req, res) => {
   }
 };
 
-// Actualización de datos del usuario autenticado
+// Actualización de datos del usuario
 export const updateUser = async (req, res) => {
   try {
     const userId = req.user.id || req.user._id;

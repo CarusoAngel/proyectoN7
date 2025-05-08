@@ -10,7 +10,7 @@ import { connectDB } from './config/db.js';
 import userRoutes from './routes/user.routes.js';
 import productRoutes from './routes/product.routes.js';
 import orderRoutes from './routes/order.routes.js';
-import checkoutRoutes from './routes/checkout.routes.js'; // ✅ NUEVO
+import checkoutRoutes from './routes/checkout.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,9 +21,9 @@ const PORT = process.env.PORT || 3000;
 // Conexión a MongoDB
 connectDB();
 
-// Configuración de CORS
+// CORS para producción y desarrollo
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'https://proyecto-n7.vercel.app'],
   credentials: true
 }));
 
@@ -38,7 +38,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/product', productRoutes);
 app.use('/api/v1/order', orderRoutes);
-app.use('/api/checkout', checkoutRoutes); // ✅ REGISTRO DE RUTA DE MP
+app.use('/api/checkout', checkoutRoutes); //REGISTRO DE RUTA DE MP
 
 // Ruta base
 app.get('/', (req, res) => {

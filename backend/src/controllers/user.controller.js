@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-// Registro de usuario con imagen opcional y contraseña encriptada
+// Registro de usuario con imagen opcional
 export const registerUser = async (req, res) => {
   try {
     const {
@@ -14,7 +14,7 @@ export const registerUser = async (req, res) => {
       password
     } = req.body;
 
-    let imageUrl = "";
+    let imageUrl = '';
     if (req.file) {
       imageUrl = `${req.protocol}://${req.get('host')}/uploads/usuarios/${req.file.filename}`;
     }
@@ -29,7 +29,7 @@ export const registerUser = async (req, res) => {
       telefono,
       fechaNacimiento,
       password: hashedPassword,
-      imagen: imageUrl || null,
+      imagen: imageUrl,
       rol: "cliente"
     });
 
@@ -100,7 +100,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// Verificación de token
+// Verificación de token y retorno completo del usuario
 export const verifyToken = async (req, res) => {
   try {
     const { id } = req.user;

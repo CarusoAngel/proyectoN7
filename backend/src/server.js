@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 3000;
 // Conexión a MongoDB
 connectDB();
 
-// CORS dinámico para desarrollo y producción
+// CORS para desarrollo y producción
 const whitelist = [
   'http://localhost:5173',
   'https://proyecto-n7.vercel.app'
@@ -35,7 +35,9 @@ app.use(cors({
       callback(new Error('No autorizado por CORS'));
     }
   },
-  credentials: true
+  credentials: true,
+  optionsSuccessStatus: 200,
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Middleware para recibir JSON y formularios
@@ -49,7 +51,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/product', productRoutes);
 app.use('/api/v1/order', orderRoutes);
-app.use('/api/checkout', checkoutRoutes); // REGISTRO DE RUTA DE MP
+app.use('/api/checkout', checkoutRoutes);
 
 // Ruta base
 app.get('/', (req, res) => {

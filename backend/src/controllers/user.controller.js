@@ -54,7 +54,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// Login con JWT y respuesta estructurada
+// Login con JWT
 export const loginUser = async (req, res) => {
   const { correo, password } = req.body;
 
@@ -130,7 +130,7 @@ export const verifyToken = async (req, res) => {
   }
 };
 
-// Actualización de datos del usuario
+// Actualización de usuario
 export const updateUser = async (req, res) => {
   try {
     const userId = req.user.id || req.user._id;

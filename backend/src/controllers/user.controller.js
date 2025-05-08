@@ -15,11 +15,8 @@ export const registerUser = async (req, res) => {
     } = req.body;
 
     let imageUrl = "";
-
     if (req.file) {
-      const protocol = req.protocol;
-      const host = req.get("host");
-      imageUrl = `${protocol}://${host}/uploads/usuarios/${req.file.filename}`;
+      imageUrl = `${req.protocol}://${req.get('host')}/uploads/usuarios/${req.file.filename}`;
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -32,21 +29,14 @@ export const registerUser = async (req, res) => {
       telefono,
       fechaNacimiento,
       password: hashedPassword,
-      imagen: imageUrl,
+      imagen: imageUrl || null,
       rol: "cliente"
     });
 
     await user.save();
 
-    const token = jwt.sign(
-      { id: user._id, correo: user.correo },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-
     res.status(201).json({
       message: 'Usuario registrado correctamente',
-      token,
       user: {
         id: user._id,
         nombre: user.nombre,
@@ -110,7 +100,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// Verificación de token y retorno completo del usuario
+// Verificación de token
 export const verifyToken = async (req, res) => {
   try {
     const { id } = req.user;

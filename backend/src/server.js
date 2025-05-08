@@ -21,9 +21,20 @@ const PORT = process.env.PORT || 3000;
 // Conexión a MongoDB
 connectDB();
 
-// CORS para producción y desarrollo
+// CORS dinámico para desarrollo y producción
+const whitelist = [
+  'http://localhost:5173',
+  'https://proyecto-n7.vercel.app'
+];
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://proyecto-n7.vercel.app'],
+  origin: function (origin, callback) {
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No autorizado por CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -38,7 +49,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/product', productRoutes);
 app.use('/api/v1/order', orderRoutes);
-app.use('/api/checkout', checkoutRoutes); //REGISTRO DE RUTA DE MP
+app.use('/api/checkout', checkoutRoutes); // REGISTRO DE RUTA DE MP
 
 // Ruta base
 app.get('/', (req, res) => {

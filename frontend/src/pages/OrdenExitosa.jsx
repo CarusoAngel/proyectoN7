@@ -5,49 +5,50 @@ const OrdenExitosa = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
-  const [mensaje, setMensaje] = useState("Procesando orden...");
+  const [mensaje, setMensaje] = useState("");
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const status = params.get("status");
-    const paymentId = params.get("payment_id");
-    const preferenceId = params.get("preference_id");
+    const preference_id = params.get("preference_id");
 
     if (status !== "approved") {
       navigate("/");
       return;
     }
 
-    const datosPago = {
-      status,
-      payment_id: paymentId,
-      preference_id: preferenceId,
-      creadaDesde: "auto_return"
+    const confirmarOrden = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/api/v1/order/confirmar`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ preference_id }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setMensaje("Tu orden ha sido registrada con éxito.");
+        } else {
+          setMensaje(data.message || "Hubo un problema al registrar tu orden.");
+        }
+      } catch (error) {
+        console.error("Error al confirmar orden:", error);
+        setMensaje("Ocurrió un error al registrar tu orden.");
+      }
     };
 
-    fetch(`${BASE_URL}/api/v1/order/confirmar`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datosPago)
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.ok || data.message?.includes("guardada")) {
-          setMensaje("¡Gracias por tu compra! Tu orden ha sido registrada correctamente.");
-        } else {
-          setMensaje("Tu pago fue aprobado, pero ocurrió un problema al registrar la orden.");
-        }
-      })
-      .catch(() => {
-        setMensaje("Tu pago fue aprobado, pero no se pudo registrar la orden en este momento.");
-      });
-  }, [location.search, navigate]);
+    confirmarOrden();
+  }, [location.search, navigate, BASE_URL]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white bg-[url('/background-stellare.webp')] bg-cover bg-center backdrop-blur-md p-6">
       <div className="bg-white/10 backdrop-blur-lg p-10 rounded-2xl shadow-2xl max-w-xl w-full text-center space-y-6">
         <h1 className="text-4xl font-bold text-green-400">✅ Pago Exitoso</h1>
-        <p className="text-gray-200 text-lg">{mensaje}</p>
+        <p className="text-gray-200 text-lg">
+          {mensaje || "Procesando tu orden..."}
+        </p>
         <Link
           to="/productos"
           className="inline-block bg-yellow-400 text-black font-semibold py-3 px-6 rounded-xl hover:bg-yellow-300 transition"

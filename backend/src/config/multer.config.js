@@ -18,13 +18,6 @@ export const uploadPhoto = (folderName, fieldName) => {
     }
   });
 
-  const fileFilter = (req, file, cb) => {
-    if (!file) {
-      cb(null, false); // No lanza error si no hay archivo
-    } else {
-      cb(null, true); // Acepta el archivo si viene
-    }
-  };
-
-  return multer({ storage, fileFilter }).single(fieldName);
+  // Mejor omitimos fileFilter si no necesitamos validación extra.
+  return multer({ storage }).single(fieldName);
 };

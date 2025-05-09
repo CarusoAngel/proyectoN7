@@ -130,12 +130,21 @@ export const verifyToken = async (req, res) => {
   }
 };
 
-// Actualización de usuario
+// Actualización de usuario (con imagen incluida)
 export const updateUser = async (req, res) => {
   try {
     const userId = req.user.id || req.user._id;
-    const datosActualizados = req.body;
 
+    // Prevenir errores si req.body no viene definido
+    const datosActualizados = req.body && typeof req.body === 'object' ? { ...req.body } : {};
+
+    // Si hay imagen nueva, agregarla
+    if (req.file) {
+      const imageUrl = `${req.protocol}://${req.get("host")}/uploads/usuarios/${req.file.filename}`;
+      datosActualizados.imagen = imageUrl;
+    }
+
+    // Protección de campos sensibles
     delete datosActualizados.rol;
     delete datosActualizados.password;
 

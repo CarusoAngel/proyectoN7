@@ -23,7 +23,7 @@ router.get("/verifytoken", auth, verifyToken);
 // Ver perfil del usuario autenticado
 router.get("/perfil", auth, perfilUsuario);
 
-// Actualizar usuario autenticado
-router.put("/update", auth, updateUser);
+// Actualizar usuario autenticado (con imagen opcional)
+router.put("/update", auth, uploadPhoto("usuarios", "imagen"), updateUser);
 
 export default router;

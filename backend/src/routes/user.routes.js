@@ -3,7 +3,8 @@ import {
   registerUser,
   loginUser,
   verifyToken,
-  updateUser
+  updateUser,
+  perfilUsuario
 } from "../controllers/user.controller.js";
 import { uploadPhoto } from "../config/multer.config.js";
 import auth from "../middlewares/auth.middleware.js";
@@ -18,6 +19,9 @@ router.post("/login", loginUser);
 
 // Verificación de token
 router.get("/verifytoken", auth, verifyToken);
+
+// Ver perfil del usuario autenticado
+router.get("/perfil", auth, perfilUsuario);
 
 // Actualizar usuario autenticado
 router.put("/update", auth, updateUser);

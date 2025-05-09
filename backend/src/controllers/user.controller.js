@@ -163,3 +163,24 @@ export const updateUser = async (req, res) => {
     res.status(500).json({ message: "Error al actualizar usuario", detail: error.message });
   }
 };
+
+// Obtener perfil del usuario autenticado
+export const perfilUsuario = async (req, res) => {
+  try {
+    const usuario = await User.findById(req.user.id).select("-password");
+
+    if (!usuario) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.status(200).json({
+      id: usuario._id,
+      nombre: usuario.nombre,
+      correo: usuario.correo,
+      imagen: usuario.imagen,
+      rol: usuario.rol
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener perfil", detail: error.message });
+  }
+};

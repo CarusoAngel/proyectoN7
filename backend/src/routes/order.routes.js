@@ -10,16 +10,16 @@ import auth from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// Crear una nueva orden autenticada
+// Orden con autenticación
 router.post("/", auth, crearOrden);
 
-// Crear una nueva orden como invitado
+// Orden como invitado (pública)
 router.post("/invitado", crearOrdenInvitado);
 
-// Obtener historial de órdenes del usuario autenticado
+// Historial usuario autenticado
 router.get("/mis-ordenes", auth, obtenerMisOrdenes);
 
-// Obtener todas las órdenes (solo para usuarios admin)
+// Todas las órdenes (solo admin)
 router.get("/todas", auth, obtenerTodasLasOrdenes);
 
 export default router;

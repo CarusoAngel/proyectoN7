@@ -55,7 +55,8 @@ const Checkout = ({ carrito, eliminarDelCarrito, vaciarCarrito }) => {
     }
 
     try {
-      const ordenResponse = await fetch(`${BASE_URL}/api/v1/order`, {
+      const ordenURL = `${BASE_URL}/api/v1/order${user ? "" : "/invitado"}`;
+      const ordenResponse = await fetch(ordenURL, {
         method: "POST",
         headers,
         body: JSON.stringify(payload),

@@ -1,7 +1,7 @@
 import Order from "../models/order.model.js";
 import "../models/User.js";
 
-// Crear una nueva orden (usuario autenticado)
+// Crear orden con autenticación
 export const crearOrden = async (req, res) => {
   try {
     const { nombre, direccion, productos, total } = req.body;
@@ -15,11 +15,9 @@ export const crearOrden = async (req, res) => {
       direccion,
       productos,
       total,
+      usuario: req.user?.id || null,
+      creadaComo: req.user ? "usuario" : "invitado"
     };
-
-    if (req.user && req.user.id) {
-      ordenData.usuario = req.user.id;
-    }
 
     const nuevaOrden = new Order(ordenData);
     const ordenGuardada = await nuevaOrden.save();
@@ -34,7 +32,7 @@ export const crearOrden = async (req, res) => {
   }
 };
 
-// Crear orden como invitado
+// Crear orden como invitado (sin JWT)
 export const crearOrdenInvitado = async (req, res) => {
   try {
     const { nombre, direccion, productos, total } = req.body;
@@ -65,7 +63,7 @@ export const crearOrdenInvitado = async (req, res) => {
   }
 };
 
-// Obtener historial de órdenes del usuario autenticado
+// Obtener historial del usuario autenticado
 export const obtenerMisOrdenes = async (req, res) => {
   try {
     const ordenes = await Order.find({ usuario: req.user.id })
@@ -79,16 +77,16 @@ export const obtenerMisOrdenes = async (req, res) => {
   }
 };
 
-// Obtener todas las órdenes (solo admin)
+// Obtener todas las órdenes (admin)
 export const obtenerTodasLasOrdenes = async (req, res) => {
   try {
-    if (req.user.rol !== "admin") {
+    if (!req.user || req.user.rol !== "admin") {
       return res.status(403).json({ message: "Acceso denegado: solo administradores" });
     }
 
     const ordenes = await Order.find()
-      .populate("usuario", "nombre correo")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .populate("usuario", "nombre correo");
 
     res.status(200).json(ordenes);
   } catch (error) {

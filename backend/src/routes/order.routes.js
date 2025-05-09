@@ -2,6 +2,7 @@ import express from "express";
 import {
   crearOrden,
   crearOrdenInvitado,
+  confirmarOrdenExitosa,
   obtenerMisOrdenes,
   obtenerTodasLasOrdenes
 } from "../controllers/order.controller.js";
@@ -15,6 +16,9 @@ router.post("/", auth, crearOrden);
 
 // Orden como invitado (pública)
 router.post("/invitado", crearOrdenInvitado);
+
+// Confirmación de orden tras pago aprobado
+router.post("/confirmar", confirmarOrdenExitosa);
 
 // Historial usuario autenticado
 router.get("/mis-ordenes", auth, obtenerMisOrdenes);

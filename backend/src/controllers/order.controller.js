@@ -63,6 +63,35 @@ export const crearOrdenInvitado = async (req, res) => {
   }
 };
 
+// Confirmar orden exitosa después de pago aprobado
+export const confirmarOrdenExitosa = async (req, res) => {
+  try {
+    const { status, payment_id, preference_id, creadaDesde } = req.body;
+
+    if (status !== "approved") {
+      return res.status(400).json({ message: "El pago no fue aprobado. Orden no creada." });
+    }
+
+    const nuevaOrden = new Order({
+      nombre: "Pago confirmado",
+      direccion: "Confirmación automática",
+      productos: [],
+      total: 0,
+      usuario: null,
+      creadaComo: creadaDesde || "auto_return",
+      payment_id,
+      preference_id
+    });
+
+    await nuevaOrden.save();
+
+    res.status(201).json({ ok: true, message: "Orden registrada tras aprobación de pago." });
+  } catch (error) {
+    console.error("Error al confirmar orden:", error.message, error.stack);
+    res.status(500).json({ message: "Error al registrar la orden luego del pago" });
+  }
+};
+
 // Obtener historial del usuario autenticado
 export const obtenerMisOrdenes = async (req, res) => {
   try {

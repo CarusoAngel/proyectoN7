@@ -6,15 +6,17 @@ import {
   deleteProductService
 } from '../services/product.service.js';
 
-// Crear nuevo producto con imagen
+// Crear nuevo producto con imagen (Cloudinary)
 export const createProduct = async (req, res) => {
   try {
-    if (!req.file) {
+    if (!req.file || !req.file.path) {
       return res.status(400).json({ error: 'Imagen del producto requerida' });
     }
 
-    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/productos/${req.file.filename}`;
-    const data = { ...req.body, imagen: imageUrl };
+    const data = {
+      ...req.body,
+      imagen: req.file.path  // URL pública de Cloudinary
+    };
 
     const productCreated = await createProductService(data);
 
@@ -59,14 +61,13 @@ export const getProductById = async (req, res) => {
   }
 };
 
-// Actualizar producto (opcionalmente con nueva imagen)
+// Actualizar producto (opcionalmente con nueva imagen en Cloudinary)
 export const updateProduct = async (req, res) => {
   try {
-    let updateData = req.body;
+    const updateData = { ...req.body };
 
-    if (req.file) {
-      const newImageUrl = `${req.protocol}://${req.get('host')}/uploads/productos/${req.file.filename}`;
-      updateData.imagen = newImageUrl;
+    if (req.file && req.file.path) {
+      updateData.imagen = req.file.path;
     }
 
     const updated = await updateProductService(req.params.id, updateData);

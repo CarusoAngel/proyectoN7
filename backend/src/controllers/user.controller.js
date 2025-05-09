@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-// Registro de usuario con imagen opcional
+// Registro de usuario con imagen opcional (Cloudinary)
 export const registerUser = async (req, res) => {
   try {
     const {
@@ -15,8 +15,8 @@ export const registerUser = async (req, res) => {
     } = req.body;
 
     let imageUrl = null;
-    if (req.file) {
-      imageUrl = `${req.protocol}://${req.get('host')}/uploads/usuarios/${req.file.filename}`;
+    if (req.file && req.file.path) {
+      imageUrl = req.file.path; // ✅ URL pública de Cloudinary
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -135,16 +135,12 @@ export const updateUser = async (req, res) => {
   try {
     const userId = req.user.id || req.user._id;
 
-    // Prevenir errores si req.body no viene definido
     const datosActualizados = req.body && typeof req.body === 'object' ? { ...req.body } : {};
 
-    // Si hay imagen nueva, agregarla
-    if (req.file) {
-      const imageUrl = `${req.protocol}://${req.get("host")}/uploads/usuarios/${req.file.filename}`;
-      datosActualizados.imagen = imageUrl;
+    if (req.file && req.file.path) {
+      datosActualizados.imagen = req.file.path; // ✅ Cloudinary URL
     }
 
-    // Protección de campos sensibles
     delete datosActualizados.rol;
     delete datosActualizados.password;
 

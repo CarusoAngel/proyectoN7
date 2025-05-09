@@ -20,9 +20,11 @@ dist-ssr/
 # Environment variables
 .env
 .env.local
+.env.*.local
 
 # Public uploads (ajústalo si necesitas subir imágenes a GitHub)
 public/uploads/
+uploads/
 
 # Editor directories and system files
 .vscode/

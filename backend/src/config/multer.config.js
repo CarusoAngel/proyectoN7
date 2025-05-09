@@ -1,23 +1,16 @@
 import multer from 'multer';
-import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
-import fs from 'fs';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import cloudinary from './cloudinary.config.js';
 
-export const uploadPhoto = (folderName, fieldName) => {
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      const dir = `public/uploads/${folderName}`;
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-      cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-      const ext = path.extname(file.originalname);
-      cb(null, `${uuidv4()}${ext}`);
-    }
-  });
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'stellare-productos', // Puedes cambiar el nombre de la carpeta en Cloudinary
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    transformation: [{ width: 800, height: 800, crop: 'limit' }],
+  },
+});
 
-  // Mejor omitimos fileFilter si no necesitamos validación extra.
-  return multer({ storage }).single(fieldName);
-};
+const upload = multer({ storage });
+
+export default upload;

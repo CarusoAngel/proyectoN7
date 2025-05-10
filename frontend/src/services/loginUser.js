@@ -17,9 +17,9 @@ export const loginUser = async ({ correo, password }) => {
     }
 
     localStorage.setItem('token', data.token);
-    localStorage.setItem('usuario', JSON.stringify(data.user)); // <- importante
+    localStorage.setItem('usuario', JSON.stringify(data.user)); 
 
-    window.dispatchEvent(new Event("storage")); // opcional
+    window.dispatchEvent(new Event("storage"));
 
     return data;
   } catch (error) {

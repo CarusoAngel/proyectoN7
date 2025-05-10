@@ -69,12 +69,12 @@ Stellare Industries es una aplicación web fullstack para comercio electrónico,
 
 ## Tecnologías Utilizadas
 
-- **Backend:** Node.js, Express.js, MongoDB, Mongoose
-- **Frontend:** React, Vite, Tailwind CSS
-- **Autenticación:** JWT, bcryptjs
-- **Subida de imágenes:** Multer + Cloudinary
-- **Pasarela de pago:** MercadoPago
-- **Otros:** Dotenv, CORS
+- Backend: Node.js, Express.js, MongoDB, Mongoose
+- Frontend: React, Vite, Tailwind CSS
+- Autenticación: JWT, bcryptjs
+- Subida de imágenes: Multer + Cloudinary
+- Pasarela de pago: MercadoPago
+- Otros: Dotenv, CORS
 
 ## Instalación Local
 
@@ -106,13 +106,13 @@ https://proyecto-n7.vercel.app
 
 Los endpoints están organizados por carpetas en Postman, y todos han sido verificados manualmente.
 
-**Encabezado necesario para rutas protegidas:**
+Encabezado necesario para rutas protegidas:
 
 ```http
 Authorization: Bearer <token>
 ```
 
-**Formato de datos:**
+Formato de datos:
 
 - JSON para peticiones normales.
 - form-data para peticiones con imagen (`multipart/form-data`).

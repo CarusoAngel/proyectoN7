@@ -4,7 +4,7 @@ const orderSchema = new mongoose.Schema(
   {
     usuario: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // nombre correcto del modelo
+      ref: "User",
       required: false,
     },
     nombre: {

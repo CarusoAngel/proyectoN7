@@ -20,7 +20,7 @@ function carritoReducer(state, action) {
             )
           };
         }
-        return state; // no permite agregar más de lo que hay en stock
+        return state;
       }
       return {
         carrito: [...state.carrito, { ...action.payload, cantidad: 1 }]

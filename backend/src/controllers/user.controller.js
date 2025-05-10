@@ -189,3 +189,21 @@ export const perfilUsuario = async (req, res) => {
     res.status(500).json({ message: "Error al obtener perfil", detail: error.message });
   }
 };
+
+// Obtener todos los usuarios (solo admin)
+export const getAllUsers = async (req, res) => {
+  try {
+    // Validar que el usuario autenticado sea admin
+    if (req.user.rol !== "admin") {
+      return res.status(403).json({ error: "Acceso denegado" });
+    }
+
+    const users = await User.find().select("-password");
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener usuarios",
+      detail: error.message
+    });
+  }
+};

@@ -6,8 +6,9 @@ import {
   updateUser,
   perfilUsuario
 } from "../controllers/user.controller.js";
-import upload from "../config/multer.config.js"; // ✅ Importa correctamente la nueva instancia de Multer
+import upload from "../config/multer.config.js";
 import auth from "../middlewares/auth.middleware.js";
+import { getAllUsers } from "../controllers/user.controller.js";
 
 const router = express.Router();
 
@@ -25,5 +26,8 @@ router.get("/perfil", auth, perfilUsuario);
 
 // Actualizar usuario autenticado (con imagen opcional)
 router.put("/update", auth, upload.single("imagen"), updateUser);
+
+// Obtener todos los usuarios (solo ADMIN)
+router.get("/all", auth, getAllUsers);
 
 export default router;

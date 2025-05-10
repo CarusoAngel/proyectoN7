@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-// Registro de usuario con imagen opcional (Cloudinary)
+// Registro de usuario con imagen opcional (Cloudinary o sin imagen)
 export const registerUser = async (req, res) => {
   try {
     const {
@@ -14,9 +14,18 @@ export const registerUser = async (req, res) => {
       password
     } = req.body;
 
+    if (!nombre || !apellido || !correo || !password) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+
+    const userExist = await User.findOne({ correo });
+    if (userExist) {
+      return res.status(409).json({ error: 'El correo ya está registrado' });
+    }
+
     let imageUrl = null;
     if (req.file && req.file.path) {
-      imageUrl = req.file.path; // ✅ URL pública de Cloudinary
+      imageUrl = req.file.path;
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -47,6 +56,7 @@ export const registerUser = async (req, res) => {
     });
 
   } catch (error) {
+    console.error("Error en registerUser:", error.message);
     res.status(500).json({
       error: 'Error al registrar usuario',
       detail: error.message
@@ -138,7 +148,7 @@ export const updateUser = async (req, res) => {
     const datosActualizados = req.body && typeof req.body === 'object' ? { ...req.body } : {};
 
     if (req.file && req.file.path) {
-      datosActualizados.imagen = req.file.path; // ✅ Cloudinary URL
+      datosActualizados.imagen = req.file.path;
     }
 
     delete datosActualizados.rol;

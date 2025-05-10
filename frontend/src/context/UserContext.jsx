@@ -28,13 +28,14 @@ function userReducer(state, action) {
 export function UserProvider({ children }) {
   const [state, dispatch] = useReducer(userReducer, initialState);
   const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     const verificarToken = async () => {
       if (!state.token) return;
 
       try {
-        const res = await fetch("http://localhost:3000/api/v1/user/verifytoken", {
+        const res = await fetch(`${BASE_URL}/api/v1/user/verifytoken`, {
           headers: {
             Authorization: `Bearer ${state.token}`,
           },
@@ -70,4 +71,3 @@ export function UserProvider({ children }) {
 }
 
 export const useUser = () => useContext(UserContext);
-

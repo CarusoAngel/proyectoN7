@@ -14,7 +14,14 @@ import { getAllUsers } from "../controllers/user.controller.js";
 const router = express.Router();
 
 // Registro de usuario con imagen
-router.post("/register", upload.single("imagen"), registerUser);
+router.post("/register", (req, res, next) => {
+  upload.single("imagen")(req, res, function (err) {
+    if (err) {
+      return res.status(400).json({ error: "Error al subir imagen", detail: err.message });
+    }
+    next();
+  });
+}, registerUser);
 
 // Login de usuario
 router.post("/login", loginUser);

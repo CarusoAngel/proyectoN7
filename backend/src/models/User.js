@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
     },
     imagen: {
       type: String,
-      required: true,
+      default: null,
     },
     rol: {
       type: String,

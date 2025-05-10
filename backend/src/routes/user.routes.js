@@ -4,7 +4,8 @@ import {
   loginUser,
   verifyToken,
   updateUser,
-  perfilUsuario
+  perfilUsuario,
+  deleteUser
 } from "../controllers/user.controller.js";
 import upload from "../config/multer.config.js";
 import auth from "../middlewares/auth.middleware.js";
@@ -29,5 +30,8 @@ router.put("/update", auth, upload.single("imagen"), updateUser);
 
 // Obtener todos los usuarios (solo ADMIN)
 router.get("/all", auth, getAllUsers);
+
+// Eliminar usuario (solo admin)
+router.delete("/:id", auth, deleteUser);
 
 export default router;
